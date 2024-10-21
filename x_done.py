@@ -57,15 +57,18 @@ for paint_shape in [1]:
 
                 subprocess.run(["pwsh", "-Command", f'adb shell input tap {x} {y}'], check=False)
                 print('Вошли в уровень')
-                time.sleep(1)
+                time.sleep(0.001)
 
                 path_to_save = 'D:/vs_projects/nonogram_solver_lunastory/screenshots/screenshot_temp.png '
                 screenshot(path_to_save)
                 print('Сделали скрин')
-                time.sleep(1)
+                # time.sleep(0.1)
 
                 print('Ищем числа в строках...')
                 ROWS = row_detector()
+                print(ROWS)
+                import sys
+                sys.exit()
 
                 print('Ищем числа в колонках...')
                 COLS = col_detector()
@@ -90,7 +93,7 @@ for paint_shape in [1]:
                     elif attempts >= max_attempts:
                         print("3 раза не смог собрать емае, глянь че там")
                         break
-                    
+
                 print('Задача решена')
                 time.sleep(1)
 
