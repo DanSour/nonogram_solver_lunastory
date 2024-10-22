@@ -18,7 +18,7 @@ paint_x_max = 880
 paint_y_min = 820
 paint_y_max = 1520
 
-paint_shapes = [10, 10, 12,12]
+paint_shapes = [12,12]
 
 path_to_save = 'D:/vs_projects/nonogram_solver_lunastory/screenshots/screenshot_temp.png '
 
