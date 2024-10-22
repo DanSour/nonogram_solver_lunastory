@@ -1,3 +1,4 @@
+import random
 import subprocess
 
 def solving(board):
@@ -15,7 +16,7 @@ def solving(board):
     x_step = (x_max - x_min) / cols
     y_step = (y_max - y_min) / rows
 
-    comm = ''
+    comm = []
     # Проход по таблице и отправка команд
     for i in range(rows):
         for j in range(cols):
@@ -25,14 +26,12 @@ def solving(board):
                 y = int(y_min + i * y_step + y_step / 2)
 
                 # Формирование команды
-                # command = f'adb shell input tap {x} {y}'
-                comm += f'adb shell input tap {x} {y} ; '
+                comm.append(f'adb shell input tap {x} {y} ; ')
 
-                # Отправка команды в PowerShell
-                # subprocess.run(["pwsh", "-Command", command], check=False)
+    # Перемешиваем список
+    random.shuffle(comm)
+    comm = ' '.join(comm)
+
     subprocess.run(["pwsh", "-Command", comm[:-1]], check=False)
 
-    # print('Ща, перепроверю кое-что')
-    # subprocess.run(["pwsh", "-Command", comm[:-1]], check=False)
-    
     return

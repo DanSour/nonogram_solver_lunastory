@@ -1,5 +1,6 @@
 import cv2
 import pytesseract
+import sys
 
 # Параметры обрезки
 x_min, x_max = 180, 1079  # Минимальные и максимальные координаты по x
@@ -9,7 +10,8 @@ y_min, y_max = 0, 495     # Минимальные и максимальные �
 num_parts = 10
 
 # Загрузка изображения
-image_path = f"D:/vs_projects/nonogram_solver_lunastory/screenshots/screenshot_{num_parts}x{num_parts}.png"
+# image_path = f"D:/vs_projects/nonogram_solver_lunastory/screenshots/screenshot_{num_parts}x{num_parts}.png"
+image_path = f"D:/vs_projects/nonogram_solver_lunastory/screenshots/screenshot_temp.png"
 # image = cv2.imread(image_path)
 
 #-------------------------------------------------------------------------
@@ -36,19 +38,15 @@ for i in range(num_parts):
     # Передача в Tesseract
     custom_config = '--psm 6 digits'
     result = pytesseract.image_to_string(cropped, config=custom_config)
-
-    try:
-        # result = [int(char) for char in result if char != '\n']
-        # COLS_VALUES.append(result)
-        # if result == []:
-        #     result = [0]
-        #     COLS_VALUES.append(result)
-        COLS_VALUES.append([int(char) for char in result if char != '\n'] or [0])
-    except:
-        pass
-    print(result)
+    
+    COLS_VALUES.append([int(char) for char in result[:-1].split('\n') if char.isdigit()] or [0])
+    print([int(char) for char in result[:-1].split('\n') if char != '\n'] or [0])
+    
+    # COLS_VALUES.append(int_col)
 
     # Проверка результатов
     cv2.imshow('cropped', cropped)
     cv2.waitKey(0)
+    # sys.exit()
+    
 print(COLS_VALUES)

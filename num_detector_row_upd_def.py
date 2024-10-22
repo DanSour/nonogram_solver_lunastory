@@ -10,11 +10,18 @@ def row_detector():
 
     # Загрузка изображения
     image_path = f"D:/vs_projects/nonogram_solver_lunastory/screenshots/screenshot_temp.png"
+    # image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
     image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+    import numpy as np
+    image = cv2.filter2D(image, -1, np.array([[0, -1, 0],
+                                                [-1, 5, -1],
+                                                [0, -1, 0]]))
     image = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
 
+    # image = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
+
     # Шаг по y (используем float для более точного расчета)
-    y_step = (y_max - y_min) / num_parts
+    y_step = (y_max - y_min) / num_parts 
     ROWS_VALUES = []
     # Проход по частям изображения
     for i in range(num_parts):
@@ -29,15 +36,15 @@ def row_detector():
         # Передача в Tesseract
         custom_config = '--psm 6 digits'
         result = pytesseract.image_to_string(cropped, config=custom_config)
-        try:
+        if result[:-1].isdigit():
             if int(result) > 10:
                 # Разбиваем строку на отдельные цифры и преобразуем их в список целых чисел
-                result = [int(char) for char in result if char != '\n']
+                result = [int(char) for char in result[:-1] if char != '\n']
             else:
                 # Преобразуем строку в список, содержащий одно число
                 result = [int(result)]
             ROWS_VALUES += [result]
-        except:
+        else:
             ROWS_VALUES.append([0])
-            pass
+
     return ROWS_VALUES

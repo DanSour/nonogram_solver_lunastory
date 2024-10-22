@@ -24,7 +24,6 @@ def col_detector():
     # y_step = (y_max - y_min) / num_parts
     COLS_VALUES = []
 
-    # Проход по частям изображения
     # Чикаем слева-направо и проходимся
     # Проход по частям изображения
     for i in range(num_parts):
@@ -38,7 +37,6 @@ def col_detector():
         # Передача в Tesseract
         custom_config = '--psm 6 digits'
         result = pytesseract.image_to_string(cropped, config=custom_config)
-
-        COLS_VALUES.append([int(char) for char in result if char != '\n'] or [0])
+        COLS_VALUES.append([int(char) for char in result[:-1].split('\n') if char.isdigit()] or [0])
 
     return COLS_VALUES 
