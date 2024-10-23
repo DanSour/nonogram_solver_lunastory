@@ -7,18 +7,21 @@ x_min, x_max = 0, 180  # Минимальные и максимальные ко
 y_min, y_max = 495, 1394     # Минимальные и максимальные координаты по y
 
 # Количество частей, на которые нужно разрезать изображение
-num_parts = 10
+num_parts = 15
 
 # Загрузка изображения
 # image_path = f"D:/vs_projects/nonogram_solver_lunastory/screenshots/screenshot_{num_parts}x{num_parts}.png"
 image_path = f"D:/vs_projects/nonogram_solver_lunastory/screenshots/screenshot_temp.png"
 # image = cv2.imread(image_path)
-image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+# image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+image = cv2.imread(image_path)
 import numpy as np
+image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 image = cv2.filter2D(image, -1, np.array([[0, -1, 0],
                                               [-1, 5, -1],
                                               [0, -1, 0]]))
-image = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
+# image = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
+
 
 # Шаг по y (используем float для более точного расчета)
 y_step = (y_max - y_min) / num_parts
