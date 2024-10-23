@@ -1,30 +1,26 @@
 import cv2
 import pytesseract
+import numpy as np
 
-def row_detector():
+def row_detector(image_path, puzzle_shape):
     x_min, x_max = 0, 180  # Минимальные и максимальные координаты по x
-    y_min, y_max = 495, 1394     # Минимальные и максимальные координаты по y
+    y_min, y_max = 495, 1394  # Минимальные и максимальные координаты по y
 
-    # Количество частей, на которые нужно разрезать изображение
-    num_parts = 10
-
-    # Загрузка изображения
-    image_path = f"D:/vs_projects/nonogram_solver_lunastory/screenshots/screenshot_temp.png"
+    # Чтение изображения
     # image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-    image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-    import numpy as np
+    image = cv2.cvtColor(image_path, cv2.COLOR_BGR2GRAY)
+    
     image = cv2.filter2D(image, -1, np.array([[0, -1, 0],
                                                 [-1, 5, -1],
                                                 [0, -1, 0]]))
     image = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
 
-    # image = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
-
     # Шаг по y (используем float для более точного расчета)
-    y_step = (y_max - y_min) / num_parts 
+    y_step = (y_max - y_min) / puzzle_shape 
     ROWS_VALUES = []
+    
     # Проход по частям изображения
-    for i in range(num_parts):
+    for i in range(puzzle_shape):
         # Рассчитываем точные границы с округлением до целого
         y_start = int(y_min + i * y_step)
         y_end = int(y_min + (i + 1) * y_step)

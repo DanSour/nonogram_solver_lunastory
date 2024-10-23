@@ -1,11 +1,10 @@
 import subprocess
-from screenshot import screenshot
 import time
 import numpy as np
 import sys
 
+from screenshot import screenshot
 from num_detector_row_upd_def import row_detector
-# from num_detector_col_upd_def import col_detector
 from num_detector_col_upd_def_v2 import col_detector
 from solvers.solver_120_rows import NonogramSolver
 from wlk_through_tbl_snd_comms_def import solving
@@ -13,37 +12,57 @@ from check_complete import competition
 from lvl_check import is_enter
 
 
-paint_x_min = 195
-paint_x_max = 880
-paint_y_min = 820
-paint_y_max = 1520
+paint_x_min ,paint_x_max = 195, 880
+paint_y_min, paint_y_max = 820, 1520
 
-paint_shapes = [12,12]
+book_pages = {
+    11: {'shape': 6, 'puzzle_shape': 15},
+    12: {'shape': 6, 'puzzle_shape': 15},
+    13: {'shape': 8, 'puzzle_shape': 15},
+    14: {'shape': 8, 'puzzle_shape': 15},
+    15: {'shape': 5, 'puzzle_shape': 20},
+    16: {'shape': 5, 'puzzle_shape': 20},
+    17: {'shape': 6, 'puzzle_shape': 20},
+    18: {'shape': 6, 'puzzle_shape': 20},
+    19: {'shape': 8, 'puzzle_shape': 20},
+    20: {'shape': 10, 'puzzle_shape': 20},
+    # 21: {'shape': None, 'puzzle_shape': None},
+    # 22: {'shape': None, 'puzzle_shape': None},
+    # 23: {'shape': None, 'puzzle_shape': None},
+    # 24: {'shape': None, 'puzzle_shape': None},
+}
 
-path_to_save = 'D:/vs_projects/nonogram_solver_lunastory/screenshots/screenshot_temp.png '
+path_to_save = 'D:\\vs_projects\\nonogram_solver_lunastory\\screenshots\\screenshot_temp.png '
+ 
+for page in book_pages:
 
-for paint_shape in paint_shapes:
-
+    paint_shape = book_pages[page]['shape']
+    puzzle_shape = book_pages[page]['puzzle_shape']
+    
     matrix = np.ones((paint_shape, paint_shape))
 
     # Расчет шагов по x и y
-    x_step = (paint_x_max - paint_x_min) / (paint_shape)  # paint_shape столбцов
-    y_step = (paint_y_max - paint_y_min) / (paint_shape)  # paint_shape строки
+    x_step = (paint_x_max - paint_x_min) / paint_shape  # paint_shape столбцов
+    y_step = (paint_y_max - paint_y_min) / paint_shape  # paint_shape строки
 
-    # Размеры сетки
-    paint_rows = len(matrix)
-    paint_cols = len(matrix[0])
+    # # Расчет шагов по x и y
+    # x_step = (paint_x_max - paint_x_min) / (paint_shape)  # paint_shape столбцов
+    # y_step = (paint_y_max - paint_y_min) / (paint_shape)  # paint_shape строки
 
-    # Расчет шага по x и y, учитывая дополнительный интервал
-    x_step = (paint_x_max - paint_x_min) / paint_cols
-    y_step = (paint_y_max - paint_y_min) / paint_rows
+    # # Размеры сетки
+    # paint_rows = len(matrix)
+    # paint_cols = len(matrix[0])
 
-    for i in range(paint_rows):
-        for j in range(paint_cols):
+    # # Расчет шага по x и y, учитывая дополнительный интервал
+    # x_step = (paint_x_max - paint_x_min) / paint_cols
+    # y_step = (paint_y_max - paint_y_min) / paint_rows
+
+    for i in range(paint_shape):
+        for j in range(paint_shape):
             if matrix[i][j] == 1:
-                lvl = i*10+j+1
-                # if lvl < 8:
-                #     continue
+                lvl = i*paint_shape+j+1
+                if lvl < 6:
+                    continue
                 
                 # Вычисление координат для центра каждого квадрата
                 x = int(paint_x_min + j * x_step + x_step / 2)
@@ -54,14 +73,16 @@ for paint_shape in paint_shapes:
                 time.sleep(0.5)
                 screenshot(path_to_save)
                 if not is_enter(path_to_save):
-                    print(f'{lvl} уровень уже пройден')
+                    print(f'{lvl} уровень уже пройден\n')
                     continue
 
-                print('Ищем числа в строках...')
-                ROWS = row_detector()
-
                 print('Ищем числа в колонках...')
-                COLS = col_detector()
+                COLS = col_detector(path_to_save, puzzle_shape)
+                # COLS = col_detector()
+
+                print('Ищем числа в строках...')
+                ROWS = row_detector(path_to_save, puzzle_shape)
+                # ROWS = row_detector()
 
                 print('Думаем как решать...')
                 board = NonogramSolver(ROWS_VALUES=ROWS, COLS_VALUES=COLS).board
