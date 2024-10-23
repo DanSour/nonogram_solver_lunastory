@@ -1,6 +1,7 @@
 import cv2
 import pytesseract
 import sys
+import numpy as np
 
 # Параметры обрезки
 x_min, x_max = 0, 180  # Минимальные и максимальные координаты по x
@@ -15,7 +16,6 @@ image_path = f"D:/vs_projects/nonogram_solver_lunastory/screenshots/screenshot_t
 # image = cv2.imread(image_path)
 # image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
 image = cv2.imread(image_path)
-import numpy as np
 image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 image = cv2.filter2D(image, -1, np.array([[0, -1, 0],
                                               [-1, 5, -1],

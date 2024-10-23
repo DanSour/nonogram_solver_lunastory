@@ -10,8 +10,9 @@ from solvers.solver_120_rows import NonogramSolver
 from wlk_through_tbl_snd_comms_def import solving
 from check_complete import competition
 from lvl_check import is_enter
+import cv2
 
-
+    
 paint_x_min ,paint_x_max = 195, 880
 paint_y_min, paint_y_max = 820, 1520
 
@@ -32,84 +33,83 @@ book_pages = {
     # 24: {'shape': None, 'puzzle_shape': None},
 }
 
-path_to_save = 'D:\\vs_projects\\nonogram_solver_lunastory\\screenshots\\screenshot_temp.png '
- 
-for page in book_pages:
+# path_to_save = 'D:\\vs_projects\\nonogram_solver_lunastory\\screenshots\\screenshot_temp.png '
+while True:
 
-    paint_shape = book_pages[page]['shape']
-    puzzle_shape = book_pages[page]['puzzle_shape']
-    
-    matrix = np.ones((paint_shape, paint_shape))
+    # Capture the screen using adb
+    png_stdout_bytes = subprocess.check_output("adb exec-out screencap -p ")
+    # Convert the stdout bytes to a numpy array
+    png_bytes = np.frombuffer(png_stdout_bytes, np.uint8)
+    # Decode the image from the numpy array
+    img = cv2.imdecode(png_bytes, cv2.IMREAD_COLOR)
 
-    # Расчет шагов по x и y
-    x_step = (paint_x_max - paint_x_min) / paint_shape  # paint_shape столбцов
-    y_step = (paint_y_max - paint_y_min) / paint_shape  # paint_shape строки
+    for page in book_pages:
 
-    # # Расчет шагов по x и y
-    # x_step = (paint_x_max - paint_x_min) / (paint_shape)  # paint_shape столбцов
-    # y_step = (paint_y_max - paint_y_min) / (paint_shape)  # paint_shape строки
+        paint_shape = book_pages[page]['shape']
+        puzzle_shape = book_pages[page]['puzzle_shape']
+        
+        matrix = np.ones((paint_shape, paint_shape))
 
-    # # Размеры сетки
-    # paint_rows = len(matrix)
-    # paint_cols = len(matrix[0])
+        # Расчет шагов по x и y
+        x_step = (paint_x_max - paint_x_min) / paint_shape  # paint_shape столбцов
+        y_step = (paint_y_max - paint_y_min) / paint_shape  # paint_shape строки
 
-    # # Расчет шага по x и y, учитывая дополнительный интервал
-    # x_step = (paint_x_max - paint_x_min) / paint_cols
-    # y_step = (paint_y_max - paint_y_min) / paint_rows
+        for i in range(paint_shape):
+            for j in range(paint_shape):
+                if matrix[i][j] == 1:
+                    lvl = i*paint_shape+j+1
+                    if lvl < 6:
+                        continue
+                    
+                    # Вычисление координат для центра каждого квадрата
+                    x = int(paint_x_min + j * x_step + x_step / 2)
+                    y = int(paint_y_min + i * y_step + y_step / 2)
 
-    for i in range(paint_shape):
-        for j in range(paint_shape):
-            if matrix[i][j] == 1:
-                lvl = i*paint_shape+j+1
-                if lvl < 6:
-                    continue
-                
-                # Вычисление координат для центра каждого квадрата
-                x = int(paint_x_min + j * x_step + x_step / 2)
-                y = int(paint_y_min + i * y_step + y_step / 2)
+                    subprocess.run(["pwsh", "-Command", f'adb shell input tap {x} {y}'], check=False)
 
-                subprocess.run(["pwsh", "-Command", f'adb shell input tap {x} {y}'], check=False)
+                    time.sleep(0.5)
+                    # screenshot(path_to_save)
+                    if not is_enter(img):
+                        print(f'{lvl} уровень уже пройден\n')
+                        continue
 
-                time.sleep(0.5)
-                screenshot(path_to_save)
-                if not is_enter(path_to_save):
-                    print(f'{lvl} уровень уже пройден\n')
-                    continue
+                    print('Ищем числа в колонках...')
+                    COLS = col_detector(img, puzzle_shape)
+                    # COLS = col_detector()
 
-                print('Ищем числа в колонках...')
-                COLS = col_detector(path_to_save, puzzle_shape)
-                # COLS = col_detector()
+                    print('Ищем числа в строках...')
+                    ROWS = row_detector(img, puzzle_shape)
+                    # ROWS = row_detector()
 
-                print('Ищем числа в строках...')
-                ROWS = row_detector(path_to_save, puzzle_shape)
-                # ROWS = row_detector()
+                    print('Думаем как решать...')
+                    board = NonogramSolver(ROWS_VALUES=ROWS, COLS_VALUES=COLS).board
 
-                print('Думаем как решать...')
-                board = NonogramSolver(ROWS_VALUES=ROWS, COLS_VALUES=COLS).board
-
-                print('Решаем задачу...')
-                solving(board)
-                time.sleep(1)
-                
-                print('Проверка...')
-                screenshot(path_to_save)
-
-                attempts = 0
-                max_attempts = 3
-                while not competition(path_to_save):
-                    print('Нажму еще раз...')
+                    print('Решаем задачу...')
                     solving(board)
-                    screenshot(path_to_save)
-                    attempts += 1
-                    if competition(path_to_save) == True:
-                        break
-                    elif attempts >= max_attempts:
-                        print("3 раза не смог собрать емае, глянь че там")
-                        sys.exit()
-                print('Переходим на NEXT LEVEL\n')
-                subprocess.run(["pwsh", "-Command", f'adb shell input tap {538} {1758}'], check=False)
-                time.sleep(1)
+                    time.sleep(1)
+                    
+                    print('Проверка...')
+                    # screenshot(path_to_save)
 
-    time.sleep(7)
-    print('ща следующую картинку будем собирать...')
-    subprocess.run(["pwsh", "-Command", f'adb shell input tap {955} {1705}'], check=False)
+                    attempts = 0
+                    max_attempts = 3
+                    while not competition(img):
+                        print('Нажму еще раз...')
+                        solving(board)
+                        # screenshot(path_to_save)
+                        attempts += 1
+                        if competition(img) == True:
+                            break
+                        elif attempts >= max_attempts:
+                            print("3 раза не смог собрать емае, глянь че там")
+                            sys.exit()
+                    print('Переходим на NEXT LEVEL\n')
+                    subprocess.run(["pwsh", "-Command", f'adb shell input tap {538} {1758}'], check=False)
+                    time.sleep(1)
+
+        time.sleep(7)
+        print('ща следующую картинку будем собирать...')
+        subprocess.run(["pwsh", "-Command", f'adb shell input tap {955} {1705}'], check=False)
+    
+    
+    break
