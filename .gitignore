@@ -1,0 +1,5 @@
+__pycache__
+.conda
+.vscode
+scrcpy-win64-v2.7
+.mypy_cache
