@@ -134,14 +134,14 @@ class NonogramSolver:
 # ROWS_VALUES=[[2], [4], [6], [4, 3], [5, 4], [2, 3, 2], [3, 5], [5], [3], [2], [2], [6]]
 # COLS_VALUES=[[3], [5], [3, 2, 1], [5, 1, 1], [12], [3, 7], [4, 1, 1, 1], [3, 1, 1], [4], [2]]
 
-ROWS_VALUES = [[5],[1],[1],[1],[1]]
-COLS_VALUES = [[5],[1],[1],[1],[1]]
+# ROWS_VALUES = [[5],[1],[1],[1],[1]]
+# COLS_VALUES = [[5],[1],[1],[1],[1]]
 
 # ROWS_VALUES =  [[2,3,1], [2,3], [3,2], [7], [7,1], [3,4], [1,3,4], [4,3], [4,1,3], [4,1,3]]
 # COLS_VALUES = [[4,4],[5,3],[8],[2,7],[7],[5,2],[4],[6],[5],[1,6]]
 
 
-NonogramSolver(ROWS_VALUES=ROWS_VALUES, COLS_VALUES=COLS_VALUES)
+# NonogramSolver(ROWS_VALUES=ROWS_VALUES, COLS_VALUES=COLS_VALUES)
 
 # #------------------------------------------------------------------------------------
 # print(f"Время выполнения: {time.time() - start_time} секунд")

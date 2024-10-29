@@ -12,17 +12,17 @@ import numpy as np
 
 # # Нахождение минимальных и максимальных значений
 # x_min = np.min(x_coords)
-# x_max = np.max(x_coords)
+# puzzle_x_max = np.max(x_coords)
 # y_min = np.min(y_coords)
 # y_max = np.max(y_coords)
 
 x_min = 180
-x_max = 1079
+puzzle_x_max = 1079
 y_min = 495
 y_max = 1394
 
 # Расчет шагов по x и y
-x_step = (x_max - x_min) / (10)  # 10 столбцов
+x_step = (puzzle_x_max - x_min) / (10)  # 10 столбцов
 y_step = (y_max - y_min) / (10)  # 10 строки
 
 # Таблица значений
@@ -38,7 +38,7 @@ rows = len(board)
 cols = len(board[0])
 
 # Расчет шага по x и y, учитывая дополнительный интервал
-x_step = (x_max - x_min) / cols
+x_step = (puzzle_x_max - x_min) / cols
 y_step = (y_max - y_min) / rows
 
 comm = ''

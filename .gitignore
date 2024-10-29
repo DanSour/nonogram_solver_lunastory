@@ -3,3 +3,10 @@ __pycache__
 .vscode
 scrcpy-win64-v2.7
 .mypy_cache
+solvers/__pycache__
+solvers/enumerative_backtracking_solver.py
+solvers/backtracking_naive.py
+delete.py
+a.py
+img_correction.py
+screenshots
