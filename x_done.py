@@ -69,7 +69,7 @@ def main():
                 for j in range(picture_y_shape):
                     if matrix[i][j] == 1:
                         lvl = i*picture_x_shape+j+1
-                        if lvl < 6:
+                        if lvl < 8:
                             continue
                         
                         # Вычисление координат для центра каждого квадрата
@@ -77,7 +77,7 @@ def main():
                         y = int(picture_y_min + i * y_step + y_step / 2)
 
                         subprocess.run(["pwsh", "-Command", f'adb shell input tap {x} {y}'], check=False)
-                        subprocess.run(["pwsh", "-Command", f'adb shell input tap {x} {y}'], check=False)
+                        # subprocess.run(["pwsh", "-Command", f'adb shell input tap {x} {y}'], check=False)
 
                         screenshot(path)
                         frame = cv2.imread(path)

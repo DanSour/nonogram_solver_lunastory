@@ -18,5 +18,5 @@ book_pages = {
 # picture_x_min, picture_x_max = 195, 880
 # picture_y_min, picture_y_max = 820, 1520
 
-picture_coords = [[175, 905], [1640, 2065]]
+# picture_coords = [[175, 905], [1640, 2065]]
 # puzzle_coords = [[180, 1079], [495, 1394]]

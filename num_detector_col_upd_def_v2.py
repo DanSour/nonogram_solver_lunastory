@@ -18,8 +18,16 @@ def col_detector(image, puzzle_coords, puzzle_shape):
     # # Пока идеальный вариант
     # #-------------------------------------------------------------------------
     # Чтение изображения
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    # image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    # #-------------------------------------------------------------------------
+    image = cv2.GaussianBlur(image, (3, 3), 0)
     
+    # rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    # image = cv2.inRange(rgb, (68, 125, 125), (255, 255, 255))
+    # image = cv2.inRange(rgb, (47, 110, 112), (255, 255, 255))
+    # #-------------------------------------------------------------------------
+    
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     image = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
     #-------------------------------------------------------------------------
 
