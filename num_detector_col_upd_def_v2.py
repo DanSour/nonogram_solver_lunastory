@@ -1,39 +1,24 @@
 import cv2
 import pytesseract
 
-def col_detector(image, puzzle_coords, puzzle_shape):
-    # # Параметры обрезки
-    # puzzle_xs, puzzle_ys = puzzle_coords
-    # puzzle_x_min, puzzle_x_max = puzzle_xs
-    # puzzle_y_min, puzzle_y_max = puzzle_ys
 
-    # # puzzle_x_min, puzzle_x_max = 180, 1079  # Минимальные и максимальные координаты по x
-    # puzzle_y_min, puzzle_y_max = 0, puzzle_y_min     # Минимальные и максимальные координаты по y
+def ptshp_image(image):
+    Blur = cv2.GaussianBlur(image, (5, 5), 0)
+    GRAY = cv2.cvtColor(Blur, cv2.COLOR_BGR2GRAY)
+    THRESH = cv2.threshold(GRAY, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
+    
+    return THRESH
+
+
+def col_detector(image, puzzle_coords, puzzle_shape):
     
     puzzle_x_min, puzzle_x_max = puzzle_coords[0]
     puzzle_y_max, _ = puzzle_coords[1]
     puzzle_y_min = 0
 
-    #-------------------------------------------------------------------------
-    # # Пока идеальный вариант
-    # #-------------------------------------------------------------------------
-    # Чтение изображения
-    # image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    # #-------------------------------------------------------------------------
-    image = cv2.GaussianBlur(image, (3, 3), 0)
-    
-    # rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    # image = cv2.inRange(rgb, (68, 125, 125), (255, 255, 255))
-    # image = cv2.inRange(rgb, (47, 110, 112), (255, 255, 255))
-    # #-------------------------------------------------------------------------
-    
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    image = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
-    #-------------------------------------------------------------------------
 
     # Шаг по x и по y (используем float для более точного расчета)
     x_step = (puzzle_x_max - puzzle_x_min) / puzzle_shape
-    # y_step = (puzzle_y_max - puzzle_y_min) / puzzle_shape
 
     custom_config = '--psm 6 digits'
     COLS_VALUES = []
@@ -48,7 +33,23 @@ def col_detector(image, puzzle_coords, puzzle_shape):
         cropped = image[int(puzzle_y_min+puzzle_y_max*0.5):puzzle_y_max, x_start:x_end]
 
         # Передача в Tesseract
-        result = pytesseract.image_to_string(cropped, config=custom_config)
+        # result = pytesseract.image_to_string(cropped, config=custom_config)
+        ps_result = pytesseract.image_to_string(ptshp_image(cropped), config=custom_config)
+        wops_result = pytesseract.image_to_string(cropped, config=custom_config)
+        result = max(ps_result, wops_result, key=len)
+
         COLS_VALUES.append([int(char) for char in result[:-1].split('\n') if char.isdigit()] or [])
+        # print(result)
+        # cv2.imshow('cropped', cropped)
+        # cv2.waitKey(0)
 
     return COLS_VALUES 
+
+
+# from detect_field import detect_field_coords
+# from frame_take import frame
+
+# puzzle_coords = detect_field_coords(frame())
+# puzzle_shape = 15
+
+# print(col_detector(frame(), puzzle_coords, puzzle_shape))

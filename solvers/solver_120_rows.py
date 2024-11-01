@@ -20,9 +20,8 @@ class NonogramSolver:
 
         self.solved = False 
         self.shape = (self.no_of_rows, self.no_of_cols)
-        self.board = [[0 for c in range(self.no_of_cols)] for r in range(self.no_of_rows)]
-        # self.savepath = savepath
-        # if self.savepath != '': self.n = 0
+        # self.board = [[0 for c in range(self.no_of_cols)] for r in range(self.no_of_rows)]
+        self.board = np.zeros((15, 15), dtype=np.int8)
 
         # step 1: Defining all possible solutions for every row and col
         self.rows_possibilities = self.create_possibilities(ROWS_VALUES, self.no_of_cols)

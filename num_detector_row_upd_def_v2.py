@@ -19,20 +19,69 @@ def has_white_color(image):
     # Конвертируем в RGB)T
     rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     
-    # Создаем маску для желтого цвета
-    # yellow_mask = cv2.inRange(hsv, (20, 100, 100), (30, 255, 255))
-    # white_mask = cv2.inRange(rgb, (160,160,10), (255, 255, 50))
+    # Создаем маску для белого цвета
     white_mask = cv2.inRange(rgb, (160, 160, 160), (255, 255, 255))
     
     # Проверяем есть ли желтые пиксели
     return cv2.countNonZero(white_mask) > 0
 
 
+def ptshp_image(image):
+    Blur = cv2.GaussianBlur(image, (7, 7), 0)
+    GRAY = cv2.cvtColor(Blur, cv2.COLOR_BGR2GRAY)
+    THRESH = cv2.threshold(GRAY, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
+    return THRESH
+
+def improve_image_processing(image):
+    # 1. Использование адаптивной пороговой обработки вместо глобальной
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    # thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11, 2)
+    
+    # # 2. Применение морфологических операций для удаления шума
+    # kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+    # opening = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel, iterations=1)
+    # cv2.imshow('opening', opening)
+    # cv2.waitKey(0)
+    
+    # 3. Использование контрастирования для улучшения видимости цифр
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+    enhanced = clahe.apply(gray)
+    # cv2.imshow('enhanced', enhanced)
+    # cv2.waitKey(0)
+    
+    # 4. Применение детектора границ для выделения контуров цифр
+    # edges = cv2.Canny(enhanced, 100, 200)
+    # cv2.imshow('edges', edges)
+    # cv2.waitKey(0)
+    
+    
+    return enhanced
+
+
 def white_nums_recognition(image, custom_config):
-    rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    white_mask = cv2.inRange(rgb, (160, 160, 160), (255, 255, 255))
-    result = pytesseract.image_to_string(white_mask, config=custom_config)
-    result = [int(char) for char in result[:-1] if char != '\n']
+    
+    ps_result = pytesseract.image_to_string(ptshp_image(image), config=custom_config)
+    # print('ps_result', ps_result)
+    # cv2.imshow('white_mask', ptshp_image(image))
+
+    wops_result = pytesseract.image_to_string(
+                                              cv2.GaussianBlur(image, (5, 5), 0), 
+                                              config=custom_config
+                                              )
+    # print('wops_result', wops_result)
+    # cv2.imshow('GaussianBlur', cv2.GaussianBlur(image, (5, 5), 0))
+
+    improve_result = pytesseract.image_to_string(improve_image_processing(image), config=custom_config)
+    # print('improve_result', improve_result)
+    # cv2.imshow('improve', improve_image_processing(image))
+    # cv2.waitKey(0)
+
+    result = max([ps_result, wops_result, improve_result], key=len)
+    
+    result = [int(char) for char in result[:-1] if char != '\n' and char.isdigit()]
+    # print(result)
+    # cv2.imshow('white_mask', THRESH)
+    # cv2.waitKey(0)
     return result
 
 
@@ -43,7 +92,8 @@ def row_detector(image, puzzle_coords, puzzle_shape):
     puzzle_x_min = 0
 
     h = None
-    custom_config = '--psm 6 digits'
+    # custom_config = '--psm 6 digits'
+    custom_config = '--psm 6 --oem 3 -c tessedit_char_whitelist=0123456789'
     ROWS_VALUES = []
 
     # image = cv2.filter2D(image, -1, np.array([[0, -1, 0],
@@ -58,13 +108,8 @@ def row_detector(image, puzzle_coords, puzzle_shape):
     # kernel = np.ones((2,2), np.uint8)
     # dil = cv2.dilate(image, kernel, iterations=1)
     
-    # kernel = np.ones((2, 2), np.uint8) 
     # erode = cv2.erode(cropped, kernel, cv2.BORDER_REFLECT)  
     
-    image = cv2.filter2D(image, -1, np.array([[0, -1, 0],
-                                            [-1, 5, -1],
-                                            [0, -1, 0]]))
-
             
     for i in range(puzzle_shape):
         line = []
@@ -75,8 +120,6 @@ def row_detector(image, puzzle_coords, puzzle_shape):
 
         # Обрезаем изображение по горизонтали
         cropped = image[y_start:y_end, puzzle_x_min:puzzle_x_max]
-        # cv2.imshow('cropped', cropped)
-        # cv2.waitKey(0)
         
         if not has_yellow_color(cropped):
             result = white_nums_recognition(cropped, custom_config)
@@ -97,21 +140,18 @@ def row_detector(image, puzzle_coords, puzzle_shape):
                 if temp_yell_num != '':
                     line.append(int(temp_yell_num+digit[0]))
                     temp_yell_num = ''
-                # digit[-1] = 'y'
                 temp_yell_num+=digit[0]
                 pass
             elif has_white_color(cropped_digit):
-                # digit[-1] = 'w'
                 line.append(int(digit[0]))
         ROWS_VALUES.append(line)
 
-        # print(result)
-
     return ROWS_VALUES
 
-# path = r'screenshots\screenshot_temp.png'
-# image = cv2.imread(path)
-# puzzle_coords = [[180, 1079], [495, 1394]]
+
+# from detect_field import detect_field_coords
+# from frame_take import frame
+# puzzle_coords = detect_field_coords(frame())
 # puzzle_shape = 15
 
-# print(row_detector(image, puzzle_coords, puzzle_shape))
+# print(row_detector(frame(), puzzle_coords, puzzle_shape))

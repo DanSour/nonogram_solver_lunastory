@@ -1,7 +1,7 @@
 book_pages = {
-    12: {'shape': [6,6], 'puzzle_shape': 15},
-    13: {'shape': [8,8], 'puzzle_shape': 15},
-    14: {'shape': [8,8], 'puzzle_shape': 15},
+    # 12: {'shape': [6,6], 'puzzle_shape': 15},
+    # 13: {'shape': [8,8], 'puzzle_shape': 15},
+    # 14: {'shape': [8,8], 'puzzle_shape': 15},
     15: {'shape': [5,5], 'puzzle_shape': 20},
     16: {'shape': [5,5], 'puzzle_shape': 20},
     17: {'shape': [6,6], 'puzzle_shape': 20},
