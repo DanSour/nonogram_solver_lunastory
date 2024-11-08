@@ -1,10 +1,10 @@
 import subprocess
 import cv2
 import numpy as np
-from num_detector_row_upd_def_v2 import row_detector
-from num_detector_col_upd_def_v2 import col_detector
+from detect_rows import row_detector
+from detect_cols import col_detector
 from solvers.solver_120_rows import NonogramSolver
-from wlk_through_tbl_snd_comms_def import solving
+from solve import solving
 from detect_field import detect_field_coords
 
 while True:

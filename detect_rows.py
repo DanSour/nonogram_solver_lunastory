@@ -44,7 +44,8 @@ def improve_image_processing(image):
     # cv2.waitKey(0)
     
     # 3. Использование контрастирования для улучшения видимости цифр
-    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+    # clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+    clahe = cv2.createCLAHE(clipLimit=8.0, tileGridSize=(8, 8))
     enhanced = clahe.apply(gray)
     # cv2.imshow('enhanced', enhanced)
     # cv2.waitKey(0)
@@ -53,31 +54,34 @@ def improve_image_processing(image):
     # edges = cv2.Canny(enhanced, 100, 200)
     # cv2.imshow('edges', edges)
     # cv2.waitKey(0)
-    
-    
     return enhanced
 
 
-def white_nums_recognition(image, custom_config):
+def white_nums_recognition(image, custom_config, reader):
     
-    ps_result = pytesseract.image_to_string(ptshp_image(image), config=custom_config)
-    # print('ps_result', ps_result)
-    # cv2.imshow('white_mask', ptshp_image(image))
+    wops_result = pytesseract.image_to_string(image, config=custom_config)
+    '''
+        # ps_result = pytesseract.image_to_string(ptshp_image(image), config=custom_config)
+        # print('ps_result', ps_result)
+        # cv2.imshow('white_mask', ptshp_image(image))
 
-    wops_result = pytesseract.image_to_string(
-                                              cv2.GaussianBlur(image, (5, 5), 0), 
-                                              config=custom_config
-                                              )
-    # print('wops_result', wops_result)
-    # cv2.imshow('GaussianBlur', cv2.GaussianBlur(image, (5, 5), 0))
+        wops_result = pytesseract.image_to_string(
+                                                cv2.GaussianBlur(image, (5, 5), 0), 
+                                                config=custom_config
+                                                )
+        # print('wops_result', wops_result)
+        # cv2.imshow('GaussianBlur', cv2.GaussianBlur(image, (5, 5), 0))
 
-    improve_result = pytesseract.image_to_string(improve_image_processing(image), config=custom_config)
-    # print('improve_result', improve_result)
-    # cv2.imshow('improve', improve_image_processing(image))
-    # cv2.waitKey(0)
+        improve_result = pytesseract.image_to_string(improve_image_processing(image), config=custom_config)
+        # print('improve_result', improve_result)
+        # cv2.imshow('improve', improve_image_processing(image))
+        # cv2.waitKey(0)
 
-    result = max([ps_result, wops_result, improve_result], key=len)
-    
+        result = max([improve_result, wops_result, ps_result], key=len)
+        result = reader.readtext(image, detail=0)
+    '''     
+    result = max([wops_result], key=len)
+
     result = [int(char) for char in result[:-1] if char != '\n' and char.isdigit()]
     # print(result)
     # cv2.imshow('white_mask', THRESH)
@@ -85,13 +89,12 @@ def white_nums_recognition(image, custom_config):
     return result
 
 
-def row_detector(image, puzzle_coords, puzzle_shape):
+def row_detector(image, puzzle_coords, puzzle_shape, reader=None):
 
     puzzle_x_max, _ = puzzle_coords[0]
     puzzle_y_min, puzzle_y_max = puzzle_coords[1]
     puzzle_x_min = 0
 
-    h = None
     # custom_config = '--psm 6 digits'
     custom_config = '--psm 6 --oem 3 -c tessedit_char_whitelist=0123456789'
     ROWS_VALUES = []
@@ -101,6 +104,7 @@ def row_detector(image, puzzle_coords, puzzle_shape):
     #                                         [0, -1, 0]]))
 
     y_step = (puzzle_y_max - puzzle_y_min) / puzzle_shape 
+    h = int(y_step)  # высота каждой строки будет одинаковой
     
     # image = cv2.GaussianBlur(image, (6, 6), 0)
 
@@ -110,7 +114,6 @@ def row_detector(image, puzzle_coords, puzzle_shape):
     
     # erode = cv2.erode(cropped, kernel, cv2.BORDER_REFLECT)  
     
-            
     for i in range(puzzle_shape):
         line = []
         
@@ -122,12 +125,12 @@ def row_detector(image, puzzle_coords, puzzle_shape):
         cropped = image[y_start:y_end, puzzle_x_min:puzzle_x_max]
         
         if not has_yellow_color(cropped):
-            result = white_nums_recognition(cropped, custom_config)
+            result = white_nums_recognition(cropped, custom_config, reader)
             ROWS_VALUES.append(result)
             continue
 
-        if h == None:
-            h = cropped.shape[0]
+        # if h == None:
+        #     h = cropped.shape[0]
        
         # Передача в Tesseract
         boxes = pytesseract.image_to_boxes(cropped, config=custom_config)
@@ -140,8 +143,9 @@ def row_detector(image, puzzle_coords, puzzle_shape):
                 if temp_yell_num != '':
                     line.append(int(temp_yell_num+digit[0]))
                     temp_yell_num = ''
+                    continue
                 temp_yell_num+=digit[0]
-                pass
+                
             elif has_white_color(cropped_digit):
                 line.append(int(digit[0]))
         ROWS_VALUES.append(line)
@@ -149,9 +153,16 @@ def row_detector(image, puzzle_coords, puzzle_shape):
     return ROWS_VALUES
 
 
-# from detect_field import detect_field_coords
-# from frame_take import frame
-# puzzle_coords = detect_field_coords(frame())
-# puzzle_shape = 15
 
-# print(row_detector(frame(), puzzle_coords, puzzle_shape))
+# from detect_field import detect_field_coords
+# # from frame_take import frame
+# import cv2
+
+# img = cv2.imread(r'screenshots\screenshot_temp.png')
+# # puzzle_coords = detect_field_coords(frame())
+# det = row_detector(img, 
+#                    puzzle_coords=detect_field_coords(img), 
+#                    puzzle_shape= 20)
+# # print(answer == det)
+# print(det)
+# # print(col_detecto r(frame(), puzzle_coords, puzzle_shape))
