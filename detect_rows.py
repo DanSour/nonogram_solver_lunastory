@@ -1,6 +1,6 @@
 import pytesseract
 import cv2
-import numpy as np
+# import numpy as np
 
 
 def has_yellow_color(image):
@@ -8,7 +8,6 @@ def has_yellow_color(image):
     rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     
     # Создаем маску для желтого цвета
-    # yellow_mask = cv2.inRange(hsv, (20, 100, 100), (30, 255, 255))
     yellow_mask = cv2.inRange(rgb, (160,160,10), (255, 255, 50))
     
     # Проверяем есть ли желтые пиксели
@@ -22,7 +21,7 @@ def has_white_color(image):
     # Создаем маску для белого цвета
     white_mask = cv2.inRange(rgb, (160, 160, 160), (255, 255, 255))
     
-    # Проверяем есть ли желтые пиксели
+    # Проверяем есть ли белые пиксели
     return cv2.countNonZero(white_mask) > 0
 
 
@@ -99,20 +98,9 @@ def row_detector(image, puzzle_coords, puzzle_shape, reader=None):
     custom_config = '--psm 6 --oem 3 -c tessedit_char_whitelist=0123456789'
     ROWS_VALUES = []
 
-    # image = cv2.filter2D(image, -1, np.array([[0, -1, 0],
-    #                                         [-1, 5, -1],
-    #                                         [0, -1, 0]]))
-
     y_step = (puzzle_y_max - puzzle_y_min) / puzzle_shape 
     h = int(y_step)  # высота каждой строки будет одинаковой
     
-    # image = cv2.GaussianBlur(image, (6, 6), 0)
-
-    # # Сделать мыльницу из цифр
-    # kernel = np.ones((2,2), np.uint8)
-    # dil = cv2.dilate(image, kernel, iterations=1)
-    
-    # erode = cv2.erode(cropped, kernel, cv2.BORDER_REFLECT)  
     
     for i in range(puzzle_shape):
         line = []
@@ -129,9 +117,6 @@ def row_detector(image, puzzle_coords, puzzle_shape, reader=None):
             ROWS_VALUES.append(result)
             continue
 
-        # if h == None:
-        #     h = cropped.shape[0]
-       
         # Передача в Tesseract
         boxes = pytesseract.image_to_boxes(cropped, config=custom_config)
         temp_yell_num=''
@@ -155,14 +140,14 @@ def row_detector(image, puzzle_coords, puzzle_shape, reader=None):
 
 
 # from detect_field import detect_field_coords
-# # from frame_take import frame
-# import cv2
+# from take_frame import frame
+# # import cv2
 
-# img = cv2.imread(r'screenshots\screenshot_temp.png')
-# # puzzle_coords = detect_field_coords(frame())
-# det = row_detector(img, 
-#                    puzzle_coords=detect_field_coords(img), 
+# # img = cv2.imread(r'screenshots\screenshot_temp.png')
+# puzzle_coords = detect_field_coords(frame())
+# det = row_detector(frame(), 
+#                    puzzle_coords=detect_field_coords(frame()), 
 #                    puzzle_shape= 20)
-# # print(answer == det)
+# # # print(answer == det)
 # print(det)
-# # print(col_detecto r(frame(), puzzle_coords, puzzle_shape))
+# # # print(col_detecto r(frame(), puzzle_coords, puzzle_shape))

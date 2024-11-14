@@ -3,55 +3,144 @@ import pytesseract
 import numpy as np
 
 
-def ptshp_image(image):
-    # Blur = cv2.GaussianBlur(image, (5, 5), 0)
-    Blur = cv2.GaussianBlur(image, (3, 3), 0)
-    GRAY = cv2.cvtColor(Blur, cv2.COLOR_BGR2GRAY)
-    THRESH = cv2.threshold(GRAY, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
+def rotate_image_simple(image, angle):
+    height, width = image.shape[:2]
+    center = (width//2, height//2)
     
-    return THRESH
+    # Вычисляем новые размеры, чтобы избежать обрезки
+    diagonal = int(np.sqrt(height**2 + width**2))
+    new_height = diagonal
+    new_width = diagonal
+    
+    # Создаем матрицу поворота
+    M = cv2.getRotationMatrix2D(center, angle, 1.0)
+    
+    # Обновляем матрицу с учетом новых размеров
+    M[0, 2] += (new_width - width) // 2
+    M[1, 2] += (new_height - height) // 2
+    
+    # Применяем поворот
+    rotated = cv2.warpAffine(image, M, (new_width, new_height), 
+                            borderMode=cv2.BORDER_CONSTANT, 
+                            # borderValue=(81, 80, 5)
+                            borderValue=(83, 82, 5)
+                            )
+    return rotated
 
+# ----------------------------------------------------------------------
+def replace_color_range(image, from_color_min, from_color_max, to_color):
+    """
+    Заменяет диапазон цветов на новый цвет
+    from_color_min, from_color_max - кортежи BGR для диапазона исходных цветов
+    to_color - кортеж BGR для нового цвета
+    """
+    # Создаем маску для выбранного диапазона цветов
+    mask = cv2.inRange(image, from_color_min, from_color_max)
+    
+    # Создаем копию изображения
+    result = image.copy()
+    
+    # Заменяем цвета где mask == 255
+    result[mask > 0] = to_color
+    
+    return result
 
-def improve_image_processing(image):
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
-    enhanced = clahe.apply(gray)
-    return enhanced
+def extend_image_left(image, width_padding=100, height_padding=0, border_color=None):
+    height, width = image.shape[:2]
+    new_width = width + width_padding
+    new_height = height + height_padding
+    
+    extended = np.full((new_height, new_width, 3), border_color, dtype=np.uint8)
+    extended[height_padding:, width_padding:] = image
+    
+    return extended
 
+# def recognition(image, custom_config):
+#     image = extend_image_left(image, width_padding=100, height_padding=0, border_color=(80, 81, 5))
+#     # image = rotate_image_simple(image, angle=-10)
+#     # image = replace_color_range(image, (80, 80, 5), (86, 86, 6), (80, 81, 5))
+#     # image = replace_color_range(image, (114, 114, 51), (255, 255, 255), (255, 255, 255))
+
+    
+#     # wops_result = pytesseract.image_to_string(image, config=custom_config)
+#     wops_result = ocr.ocr(image)
+#     print('wops_result\n', wops_result)
+#     cv2.imshow('wops', image)
+
+#     result = max([wops_result], key=len)
+#     result = [int(char) for char in result[:-1] if char != '\n' and char.isdigit()]
+#     cv2.waitKey(0)
+
+#     return result
 
 def recognition(image, custom_config):
 
+    # image = replace_color_range(image, (80, 80, 5), (86, 86, 6), (80, 81, 5))
     # Передача в Tesseract
-    wops_result = pytesseract.image_to_string(image, config=custom_config)
-    # print('wops_result', wops_result)
+    # wops_result = pytesseract.image_to_string(image, config=custom_config)
+    # print('wops_result\n', wops_result)
     # cv2.imshow('wops', image)
-    
-    cropped = cv2.resize(image, (0, 0), fx=1.4, fy=1.4)
-    croped_result = pytesseract.image_to_string(cropped, config=custom_config)
-    # ps_result = pytesseract.image_to_string(ptshp_image(image), config=custom_config)
-    # print('ps_result', ps_result)
-    # cv2.imshow('ptshp_image', ptshp_image(image))
-    
-    # gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    # gray_result = pytesseract.image_to_string(gray_image, config=custom_config)
-    # print('gray_result', gray_result)
-    # cv2.imshow('gray_image', gray_image)
-    
-    # gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    # _, binary_image = cv2.threshold(gray_image, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-    # binary_result = pytesseract.image_to_string(binary_image, config=custom_config)
-    # print('binary_result', binary_result)
+
+    x2_cropped = cv2.resize(image, (0, 0), fx=2, fy=2)
+    x2_cropped_result = pytesseract.image_to_string(x2_cropped, config=custom_config)
+    # print('x2_cropped_result\n', x2_cropped_result)
+    # cv2.imshow('x2_cropped', x2_cropped)
+
+    rotatedl = rotate_image_simple(image, angle=-10)
+    rotatedl_result = pytesseract.image_to_string(rotatedl, config=custom_config)
+    # print('rotatedl_result\n', rotatedl_result)
+    # cv2.imshow('rotatedl', rotatedl)
+
+    rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    # image = cv2.inRange(image, (211, 218, 14), (255, 255, 255))
+    mask = cv2.inRange(rgb, (180, 197, 14), (255, 255, 255))
+    mask_result = pytesseract.image_to_string(mask, config=custom_config)
+    # print('mask_result\n', mask_result)
+    # cv2.imshow('mask', mask)
+
+
+    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    _, binary_image = cv2.threshold(gray_image, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+    binary_result = pytesseract.image_to_string(binary_image, config=custom_config)
+    # print('binary_result\n', binary_result)
     # cv2.imshow('binary_image', binary_image)
+
+    # x2_binary_result = pytesseract.image_to_string(cv2.resize(binary_image, (0, 0), fx=2, fy=2), config=custom_config)
+    # print('binary_result2x\n', binary_result)
+    # cv2.imshow('binary_image2x', cv2.resize(binary_image, (0, 0), fx=2, fy=2))
     
-    # improve_result = pytesseract.image_to_string(improve_image_processing(image), config=custom_config)
-    # print('improve_result', improve_result)
-    # cv2.imshow('improve', improve_image_processing(image))
-    
-    # result = max([wops_result, ps_result, improve_result], key=len)
-    result = max([wops_result, croped_result], key=len)
+    # result = max([x2_cropped_result, binary_result, x2_binary_result], key=len)
+    result = max([x2_cropped_result, mask_result, rotatedl_result, binary_result], key=len)
+
+
+    if len(result) == 0:
+        image = image[int(image.shape[0]*0.5):image.shape[0], :]
+        # kernel = np.ones((2,2), np.uint8)
+        # image = cv2.dilate(image, kernel, iterations=1)
+
+        # image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        # image = cv2.inRange(image, (237, 237, 237), (255, 255, 255))
+        # image = cv2.inRange(image, (160, 160, 160), (255, 255, 255))
+
+        wops_result = pytesseract.image_to_string(image, config=custom_config)
+        # print('wops_result\n', wops_result)
+        # cv2.imshow('wops', image)
+
+        rotated = rotate_image_simple(image, angle=10)
+
+        rotated_10_result = pytesseract.image_to_string(rotated, config=custom_config)
+        # print('rotated_10_result\n', rotated_10_result)
+        # cv2.imshow('rotated', rotated)
+
+        x2_rotated_result = pytesseract.image_to_string(cv2.resize(rotated, (0, 0), fx=2, fy=2), config=custom_config)
+        # print('x2_rotated_result\n', x2_rotated_result)
+        # cv2.imshow('x2_rotated', cv2.resize(rotated, (0, 0), fx=2, fy=2))
+
+        result = max([wops_result, rotated_10_result, x2_rotated_result], key=len)
+        # cv2.waitKey(0)
 
     result = [int(char) for char in result[:-1].split('\n') if char.isdigit()] or []
-    # cv2.waitKey(0)
+    cv2.waitKey(0)
     return result
 
 
@@ -75,7 +164,8 @@ def col_detector(image, puzzle_coords, puzzle_shape):
         x_end = int(puzzle_x_min + (i + 1) * x_step)
 
         # Обрезаем изображение
-        cropped = image[int(puzzle_y_min+puzzle_y_max*0.5):puzzle_y_max, x_start:x_end]
+        # cropped = image[:, x_start+7:x_end-5]
+        cropped = image[int(puzzle_y_min+puzzle_y_max*0.5):puzzle_y_max, x_start+7:x_end-5]
         result = recognition(cropped, custom_config)
         COLS_VALUES.append(result)
 
@@ -83,17 +173,10 @@ def col_detector(image, puzzle_coords, puzzle_shape):
 
 
 # from detect_field import detect_field_coords
-# # from frame_take import frame
+# from take_frame import frame
 # import cv2
 
-# # img = cv2.imread(r'screenshots\screenshot_20x20_.png')
-# img = cv2.imread(r'screenshots\screenshot_temp.png')
-# img = cv2.resize(img, (0, 0), fx=1.4, fy=1.4)
-
-# # puzzle_coords = detect_field_coords(frame())
-# det = col_detector(img, 
-#                    puzzle_coords=detect_field_coords(img), 
+# det = col_detector(frame(), 
+#                    puzzle_coords=detect_field_coords(frame()), 
 #                    puzzle_shape= 20)
-# # print(answer == det)
 # print(det)
-# # print(col_detecto r(frame(), puzzle_coords, puzzle_shape))

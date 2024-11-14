@@ -10,7 +10,3 @@ def frame():
     image_array = np.frombuffer(result.stdout, np.uint8)
     frame = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
     return frame
-
-# cv2.imshow('a', frame)
-# cv2.waitKey(0)
-# print(frame().shape)
