@@ -5,7 +5,7 @@ import sys
 from dataclasses import dataclass
 
 from take_frame import frame
-from detect_field import detect_picture_field, detect_puzzle
+from detect_field import *
 from check_lvl import is_enter
 from detect_rows import row_detector
 from detect_cols import col_detector
@@ -32,7 +32,7 @@ def level_entry(x: int, y: int, delay: float = 0.5, lvl: int = None):
     if not is_enter(frame()):
         tap_screen(x, y, delay)
         if not is_enter(frame()):
-            print(f'{lvl} уровень уже пройден\n')
+            # print(f'{lvl} уровень уже пройден\n')
             return False
     return True
 
@@ -60,43 +60,49 @@ def solve_puzzle(puzzle_coords: PuzzleCoordinates, puzzle_shape: int) -> bool:
     return True
 
 def main():
-    start_lvl = 7
+    # start_lvl = 7
     puzzle = None
 
-    big_picture_coords = detect_picture_field(frame())
-    picture_coords = PuzzleCoordinates(
-        x_min=big_picture_coords['coords'][0][0],
-        x_max=big_picture_coords['coords'][0][1],
-        y_min=big_picture_coords['coords'][1][0],
-        y_max=big_picture_coords['coords'][1][1]
-    )
+    # # big_picture_coords = detect_puzzle(frame())
+    for _ in range(10):
+        picture = detect_picture(frame())
+    # picture_coords = PuzzleCoordinates(
+    #     x_min=picture['coords'][0][0],
+    #     x_max=picture['coords'][0][1],
+    #     y_min=picture['coords'][1][0],
+    #     y_max=picture['coords'][1][1]
+    # )
 
-    for page, page_info in book_pages.items():
-        picture_shape = page_info['shape']
-        matrix = np.ones(picture_shape)
+    # for page, page_info in book_pages.items():
+    #     picture_shape = page_info['shape']
+    #     matrix = np.ones(picture_shape)
         
-        x_step = (picture_coords.x_max - picture_coords.x_min) / picture_shape[1]
-        y_step = (picture_coords.y_max - picture_coords.y_min) / picture_shape[0]
+    #     x_step = (picture_coords.x_max - picture_coords.x_min) / picture_shape[1]
+    #     y_step = (picture_coords.y_max - picture_coords.y_min) / picture_shape[0]
         
-        # puzzle_shape = page_info['puzzle_shape']
+    #     # puzzle_shape = page_info['puzzle_shape']
 
-        for i in range(picture_shape[0]):
-            for j in range(picture_shape[1]):
-                if matrix[i][j] != 1:
-                    continue
+    #     for i in range(picture_shape[0]):
+    #         for j in range(picture_shape[1]):
+                # if matrix[i][j] != 1:
+                #     continue
                     
-                lvl = i * picture_shape[0] + j + 1
-                if page == 17 and lvl < start_lvl:
-                    continue
+                # lvl = i * picture_shape[0] + j + 1
+                # if page == 17 and lvl < start_lvl:
+                #     continue
 
-                x = int(picture_coords.x_min + j * x_step + x_step / 2)
-                y = int(picture_coords.y_min + i * y_step + y_step / 2)
+                # x = int(picture_coords.x_min + j * x_step + x_step / 2)
+                # y = int(picture_coords.y_min + i * y_step + y_step / 2)
 
+        for square in picture['squares']:
+                x = square[0]
+                y = square[1]
                 # Пытаемся войти в уровень
-                if not level_entry(x, y, delay=0.5, lvl=lvl):
+                if not level_entry(x, y, delay=0.5):
                     continue
 
-                print(f'{lvl} уровень')
+                # print(f'{lvl} уровень')
+                
                 if puzzle is None:
                     puzzle = detect_puzzle(frame())
 
