@@ -12,7 +12,7 @@ def try_solve_with_hints():
     return competition(frame())
     
 def try_solve_manually(max_attempts=3, board=None, puzzle_coords=None):
-    for attempt in range(max_attempts):
+    for _ in range(max_attempts):
         solving(board, puzzle_coords)
         time.sleep(1)
         if competition(frame()):
