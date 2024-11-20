@@ -30,14 +30,8 @@ class NonogramSolver:
         while not self.solved:
             if not_solved_times > not_solved_max_times:
                 print("I cant solve it     :(")
-                self.board = False
+                self.board = [ ]
                 break
-            # --------------------------------------------------------------------------
-            # if not_solved_times > not_solved_max_times:
-            #     # print('Solved max times reached')
-            #     print("I cant solve it     :(")
-            #     # self.solved = False
-                # return
             # --------------------------------------------------------------------------
             # step 2: Order indici by lowest 
             self.lowest_rows = self.select_index_not_done(self.rows_possibilities, 1)
@@ -62,7 +56,6 @@ class NonogramSolver:
             self.check_solved()
             # --------------------------------------------------------------------------
             not_solved_times += 1
-            # --------------------------------------------------------------------------
 
 
     def create_possibilities(self, values, no_of_other):

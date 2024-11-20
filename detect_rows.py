@@ -56,7 +56,8 @@ def improve_image_processing(image):
     return enhanced
 
 
-def white_nums_recognition(image, custom_config, reader):
+def white_nums_recognition(image, custom_config):
+    image = cv2.inRange(image, (150, 150, 150), (255, 255, 255))
     
     wops_result = pytesseract.image_to_string(image, config=custom_config)
     '''
@@ -82,13 +83,10 @@ def white_nums_recognition(image, custom_config, reader):
     result = max([wops_result], key=len)
 
     result = [int(char) for char in result[:-1] if char != '\n' and char.isdigit()]
-    # print(result)
-    # cv2.imshow('white_mask', THRESH)
-    # cv2.waitKey(0)
     return result
 
 
-def row_detector(image, puzzle_coords, puzzle_shape, reader=None):
+def row_detector(image, puzzle_coords, puzzle_shape):
 
     puzzle_x_max, _ = puzzle_coords[0]
     puzzle_y_min, puzzle_y_max = puzzle_coords[1]
@@ -113,7 +111,7 @@ def row_detector(image, puzzle_coords, puzzle_shape, reader=None):
         cropped = image[y_start:y_end, puzzle_x_min:puzzle_x_max]
         
         if not has_yellow_color(cropped):
-            result = white_nums_recognition(cropped, custom_config, reader)
+            result = white_nums_recognition(cropped, custom_config)
             ROWS_VALUES.append(result)
             continue
 
@@ -136,18 +134,3 @@ def row_detector(image, puzzle_coords, puzzle_shape, reader=None):
         ROWS_VALUES.append(line)
 
     return ROWS_VALUES
-
-
-
-# from detect_field import detect_field_coords
-# from take_frame import frame
-# # import cv2
-
-# # img = cv2.imread(r'screenshots\screenshot_temp.png')
-# puzzle_coords = detect_field_coords(frame())
-# det = row_detector(frame(), 
-#                    puzzle_coords=detect_field_coords(frame()), 
-#                    puzzle_shape= 20)
-# # # print(answer == det)
-# print(det)
-# # # print(col_detecto r(frame(), puzzle_coords, puzzle_shape))

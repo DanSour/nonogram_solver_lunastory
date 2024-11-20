@@ -25,7 +25,7 @@ def solving(board, puzzle_coords):
                 y = int(puzzle_y_min + i * y_step + y_step / 2)
 
                 # Формирование команды
-                comm.append(f'adb shell input tap {x} {y} ; Start-Sleep -Milliseconds 2.0 ; ')
+                comm.append(f'adb shell input tap {x} {y} ; Start-Sleep -Milliseconds 2.8 ; ')
 
     # Перемешиваем список
     random.shuffle(comm)
@@ -35,13 +35,3 @@ def solving(board, puzzle_coords):
     time.sleep(1)
 
     return
-
-
-# from detect_field import detect_field_coords
-# import cv2
-
-# img = cv2.imread('screenshots\screenshot_temp.png')
-
-# puzzle_coords = detect_field_coords(img)
-
-# solving(board, puzzle_coords=puzzle_coords)
