@@ -25,7 +25,7 @@ def solving(board, puzzle_coords):
                 y = int(puzzle_y_min + i * y_step + y_step / 2)
 
                 # Формирование команды
-                comm.append(f'adb shell input tap {x} {y} ; Start-Sleep -Milliseconds 2.8 ; ')
+                comm.append(f'adb shell input tap {x} {y} ; Start-Sleep -Milliseconds 2.9 ; ')
 
     # Перемешиваем список
     random.shuffle(comm)

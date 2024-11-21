@@ -24,7 +24,7 @@ def tap_screen(x: int, y: int, delay: float = 0.5):
     subprocess.run(["pwsh", "-Command", f'adb shell input tap {x} {y}'], check=False)
     time.sleep(delay)
 
-def level_entry(x: int, y: int, delay: float = 0.5, lvl: int = None):
+def level_entry(x: int, y: int, delay: float = 0.5):
     tap_screen(x, y, delay)
     if not is_enter(frame()):
         tap_screen(x, y, delay)
@@ -85,8 +85,8 @@ def main(solving_type):
         print('ща следующую картинку будем собирать...')
         tap_screen(955, 1705, delay=0.1)
 
-if __name__ == '__main__':
-    solving_type = 'big'
+# if __name__ == '__main__':
+#     solving_type = 'big'
 
 
-    main(solving_type)
+#     main(solving_type)
