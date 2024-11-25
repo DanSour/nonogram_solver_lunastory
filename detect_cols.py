@@ -1,6 +1,7 @@
 import cv2
 import pytesseract
 import numpy as np
+from detect_rows import ptshp_image
 
 def rotate_image_simple(image, angle):
     height, width = image.shape[:2]
@@ -44,14 +45,14 @@ def replace_color_range(image, from_color_min, from_color_max, to_color):
     return result
 
 
-def recognition(image, custom_config):
+def recognition(image, custom_config, blur):
 
     # Передача в Tesseract
-    image = cv2.inRange(image, (10, 191, 159), (255, 255, 255))
+    # image = cv2.inRange(image, (10, 191, 159), (255, 255, 255))
 
-    wops_result = pytesseract.image_to_string(image, config=custom_config)
-    result = wops_result
-    
+    # result = pytesseract.image_to_string(image, config=custom_config)
+    result = pytesseract.image_to_string(ptshp_image(image, Blur=blur), config=custom_config)
+
     # x2_cropped = cv2.resize(image, (0, 0), fx=2, fy=2)
     # x2_cropped_result = pytesseract.image_to_string(x2_cropped, config=custom_config)
 
@@ -92,6 +93,7 @@ def recognition(image, custom_config):
 
 
 def col_detector(image, puzzle_coords, puzzle_shape):
+
     puzzle_x_min, puzzle_x_max = puzzle_coords[0]
     puzzle_y_max, _ = puzzle_coords[1]
     puzzle_y_min = 0
@@ -99,9 +101,16 @@ def col_detector(image, puzzle_coords, puzzle_shape):
     # Шаг по x и по y (используем float для более точного расчета)
     x_step = (puzzle_x_max - puzzle_x_min) / puzzle_shape
 
-    custom_config = '--psm 6 digits'
-    # custom_config = '--psm 6 --oem 3 -c tessedit_char_whitelist=0123456789'
+    # custom_config = '--psm 6 digits'
+    custom_config = '--psm 6 --oem 3 -c tessedit_char_whitelist=0123456789'
     COLS_VALUES = []
+ 
+    blurs = {
+        5: 7,
+        10: 3,
+        15: 3,
+        20: 1
+    }
 
     # Проход по частям изображения
     for i in range(puzzle_shape):
@@ -111,7 +120,7 @@ def col_detector(image, puzzle_coords, puzzle_shape):
 
         # Обрезаем изображение
         cropped = image[int(puzzle_y_min + puzzle_y_max * 0.5):puzzle_y_max, x_start + 0:x_end - 0]
-        result = recognition(cropped, custom_config)
+        result = recognition(cropped, custom_config, blur=blurs[puzzle_shape])
         COLS_VALUES.append(result)
 
     return COLS_VALUES 

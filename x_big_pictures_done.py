@@ -32,34 +32,39 @@ def level_entry(x: int, y: int, delay: float = 0.5):
             return False
     return True
 
-def solve_puzzle(puzzle_coords: PuzzleCoordinates, puzzle_shape: int):
+def solve_puzzle(puzzle_coords: PuzzleCoordinates, puzzle_shape: int): 
     """Решает один пазл и возвращает True если решение успешно"""
-    print('Ищем числа сверху...')
-    cols = col_detector(frame(), puzzle_coords, puzzle_shape)
-    print(cols)
+    try:
+        print('Ищем числа сверху...')
+        cols = col_detector(frame(), puzzle_coords, puzzle_shape)
+        print(cols)
 
-    print('Ищем числа слева...')
-    rows = row_detector(frame(), puzzle_coords, puzzle_shape)
-    print(rows)
+        print('Ищем числа слева...')
+        rows = row_detector(frame(), puzzle_coords, puzzle_shape)
+        print(rows)
 
-    print('Думаем как решать...')
-    board = NonogramSolver(ROWS_VALUES=rows, COLS_VALUES=cols).board
+        print('Думаем как решать...')
+        board = NonogramSolver(ROWS_VALUES=rows, COLS_VALUES=cols).board
 
-    if len(board) == 0:
-        print()
-        tap_screen(90, 130, delay=0)
-        tap_screen(540, 1100, delay=0)
+        if len(board) == 0:
+            return False
+
+        print('Решаем задачу...')
+        solving(board, puzzle_coords)
+        time.sleep(1)
+        
+        print('Проверка...')
+        if not competition(frame()):
+            if not try_solve_with_hints():
+                # try_solve_manually(board, puzzle_coords)
+                solving(board, puzzle_coords)
+                if not competition(frame()):
+                    return False
+
+        return True
+    except Exception as e:
+        print(f"Ошибка в solve_puzzle: {e}")
         return False
-
-    print('Решаем задачу...')
-    solving(board, puzzle_coords)
-    time.sleep(1)
-    
-    print('Проверка...')
-    if not competition(frame()):
-        if not try_solve_with_hints():
-            try_solve_manually(board, puzzle_coords)
-    return True
 
 def main(solving_type):
     puzzle = None

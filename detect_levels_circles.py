@@ -48,8 +48,10 @@ def detect_circles(image) -> dict[str, list[list[int]]]:
                 # Добавление координат центра окружности в список
                 circles_centers_coords.append([x, y+750])
 
+        circles_centers_coords.sort(key=lambda coord: (coord[1], coord[0]))  # Сортировка по x, затем по y
+
     except Exception as e:
         logging.error(f"Произошла ошибка при обнаружении кругов: {e}")
-        return {'circles': circles_centers_coords}
-
+        return {'circles': []}
+    
     return {'circles': circles_centers_coords}

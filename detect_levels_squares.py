@@ -30,7 +30,7 @@ def detect_squares(img):
         for contour in contours:
             
             # Аппроксимируем контур многоугольником с точностью 2%
-            approx = cv2.approxPolyDP(contour, 0.02 * cv2.arcLength(contour, True), True)
+            approx = cv2.approxPolyDP(contour, 0.03 * cv2.arcLength(contour, True), True)
             # Проверяем, что фигура имеет четыре угла, что может указывать на квадрат
             if len(approx) == 4:
                 # x, y, w, h = cv2.boundingRect(approx)
@@ -52,7 +52,10 @@ def detect_squares(img):
                     # Если есть текст - значит уровень пройден, если нет - не пройден, он нам и нужен
                     if text == '':
                         # Добавляем центр квадрата в список
-                        square_centers.append([center_x, center_y+940])
+                        square_centers.append([center_x, center_y + 940])
+                    
+        # Сортируем центры квадратов сначала по оси X, затем по оси Y
+        square_centers.sort(key=lambda center: (center[1], center[0]))
 
     except Exception as e:
             logging.error(f"Произошла ошибка при обнаружении квадратов: {e}")

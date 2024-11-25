@@ -35,27 +35,34 @@ def detect_picture(image):
 
 
 def detect_puzzle(img, mask_type='big'):
+    try:
 
-    masks = {
-        'dmf': cv2.inRange(img, (70, 47, 39), (255, 255, 255)),
-        'normal': cv2.inRange(img, (95, 69, 66), (255, 255, 255)),
-        'big': cv2.inRange(img, (108, 93, 17), (255, 255, 255)),
-    }
+        masks = {
+            'dmf': cv2.inRange(img, (70, 47, 39), (255, 255, 255)),
+            'normal': cv2.inRange(img, (95, 69, 66), (255, 255, 255)),
+            'big': cv2.inRange(img, (108, 93, 17), (255, 255, 255)),
+        }
 
 
-    contours, _ = cv2.findContours(masks[mask_type], cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    field_contour = max(contours, key=cv2.contourArea)
-    x, y, w, h = cv2.boundingRect(field_contour)
+        contours, _ = cv2.findContours(masks[mask_type], cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        field_contour = max(contours, key=cv2.contourArea)
+        x, y, w, h = cv2.boundingRect(field_contour)
 
-    img = img[y:y+h, x:x+w]
+        img = img[y:y+h, x:x+w]
 
-    masks = {
-        'dmf': cv2.inRange(img, (70, 47, 39), (255, 255, 255)),
-        'normal': cv2.inRange(img, (95, 69, 66), (255, 255, 255)),
-        'big': cv2.inRange(img, (108, 93, 17), (255, 255, 255)),
-    }
+        masks = {
+            'dmf': cv2.inRange(img, (70, 47, 39), (255, 255, 255)),
+            'normal': cv2.inRange(img, (95, 69, 66), (255, 255, 255)),
+            'big': cv2.inRange(img, (108, 93, 17), (255, 255, 255)),
+        }
 
-    mask = masks[mask_type]
+        mask = masks[mask_type]
 
-    contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        # contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        contours, _ = cv2.findContours(mask, cv2.RETR_LIST , cv2.CHAIN_APPROX_SIMPLE)
+
+    except Exception as e:
+        print(f"Error in detect_puzzle: {e}")
+        return {'coords':[[x, x+w], [y, y+h]], 'shape':int(len(contours)**0.5)}
+    
     return {'coords':[[x, x+w], [y, y+h]], 'shape':int(len(contours)**0.5)}
