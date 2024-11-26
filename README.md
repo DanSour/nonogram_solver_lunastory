@@ -53,7 +53,8 @@
 
 ## Пример использования
 
-[![](https://markdown-videos-api.jorgenkh.no/youtube/0Y43dycmnFo)](https://youtu.be/0Y43dycmnFo)
+[![](https://markdown-videos-api.jorgenkh.no/youtube/Ief3IwF7r5I)](https://youtu.be/Ief3IwF7r5I)
+
 ## Требования
 
 Необходимые пакеты Python можно установить с помощью следующей команды:
