@@ -1,31 +1,7 @@
 import cv2
 import pytesseract
-import numpy as np
-from detect_rows import ptshp_image
 
-def rotate_image_simple(image, angle):
-    height, width = image.shape[:2]
-    center = (width//2, height//2)
-    
-    # Вычисляем новые размеры, чтобы избежать обрезки
-    diagonal = int(np.sqrt(height**2 + width**2))
-    new_height = diagonal
-    new_width = diagonal
-    
-    # Создаем матрицу поворота
-    M = cv2.getRotationMatrix2D(center, angle, 1.0)
-    
-    # Обновляем матрицу с учетом новых размеров
-    M[0, 2] += (new_width - width) // 2
-    M[1, 2] += (new_height - height) // 2
-    
-    # Применяем поворот
-    rotated = cv2.warpAffine(image, M, (new_width, new_height), 
-                            borderMode=cv2.BORDER_CONSTANT, 
-                            borderValue=(83, 82, 5))
-    return rotated
 
-# ----------------------------------------------------------------------
 def replace_color_range(image, from_color_min, from_color_max, to_color):
     """
     Заменяет диапазон цветов на новый цвет

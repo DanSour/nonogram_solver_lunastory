@@ -26,16 +26,6 @@ def ptshp_image(image, Blur=3):
     THRESH = cv2.threshold(GRAY, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
     return THRESH
 
-def improve_image_processing(image):
-    # Использование адаптивной пороговой обработки вместо глобальной
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    
-    # Использование контрастирования для улучшения видимости цифр
-    clahe = cv2.createCLAHE(clipLimit=8.0, tileGridSize=(8, 8))
-    enhanced = clahe.apply(gray)
-    
-    return enhanced
-
 
 def white_nums_recognition(image, custom_config, blur):
     

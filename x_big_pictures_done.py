@@ -4,13 +4,11 @@ from dataclasses import dataclass
 
 from take_frame import frame
 from detect_field import *
-from check_lvl import is_enter
 from detect_rows import row_detector
 from detect_cols import col_detector
 from solvers.solver_120_rows import NonogramSolver
 from solve import solving
-from check_complete import competition
-from check_solving import try_solve_with_hints
+from checking import check_complete, check_is_enter, try_solve_with_hints
 
 @dataclass
 class PuzzleCoordinates:
@@ -26,9 +24,9 @@ def tap_screen(x: int, y: int, delay: float = 0.5):
 
 def level_entry(x: int, y: int, delay: float = 0.5):
     tap_screen(x, y, delay)
-    if not is_enter(frame()):
+    if not check_is_enter(frame()):
         tap_screen(x, y, delay)
-        if not is_enter(frame()):
+        if not check_is_enter(frame()):
             return False
     return True
 
@@ -54,11 +52,11 @@ def solve_puzzle(puzzle_coords: PuzzleCoordinates, puzzle_shape: int):
         time.sleep(1)
         
         print('Проверка...')
-        if not competition(frame()):
+        if not check_complete(frame()):
             if not try_solve_with_hints():
                 # try_solve_manually(board, puzzle_coords)
                 solving(board, puzzle_coords)
-                if not competition(frame()):
+                if not check_complete(frame()):
                     return False
 
         return True
