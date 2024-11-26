@@ -1,10 +1,8 @@
 import subprocess
 import cv2
 import numpy as np
-from time import time
 
 while True:
-  # tLast = time()
 
   # Capture the screen using adb
   png_stdout_bytes = subprocess.check_output("adb exec-out screencap -p ")
@@ -19,12 +17,3 @@ while True:
   width = int(img.shape[1] * 0.3)
   height = int(img.shape[0] * 0.3)
   img = cv2.resize(img, (width, height))
-
-  # fps = 1 / (time() - tLast)
-  # cv2.putText(img, f'FPS: {fps:.2f}', (10, 30),
-  #             cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-
-  # # Display the resized image
-  # cv2.imshow('Screen Capture', img)
-  # cv2.waitKey(1)
-  # # break

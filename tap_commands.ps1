@@ -1,5 +1,3 @@
-# Путь к adb
-# $adbPath = ".\scrcpy-win64-v2.7\adb.exe"
 
 # Команды tap
 for ($y = 3; $y -le 22; $y++) {

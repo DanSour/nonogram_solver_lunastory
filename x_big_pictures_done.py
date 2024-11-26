@@ -10,7 +10,7 @@ from detect_cols import col_detector
 from solvers.solver_120_rows import NonogramSolver
 from solve import solving
 from check_complete import competition
-from check_solving import try_solve_with_hints, try_solve_manually
+from check_solving import try_solve_with_hints
 
 @dataclass
 class PuzzleCoordinates:
@@ -67,31 +67,39 @@ def solve_puzzle(puzzle_coords: PuzzleCoordinates, puzzle_shape: int):
         return False
 
 def main(solving_type):
-    puzzle = None
-    for _ in range(1):
-        picture = detect_picture(frame())
+    try:
+        for _ in range(1):
+            puzzle = None
 
-        for square in picture['squares'][::-1]:
-                x = square[0]
-                y = square[1]
+            picture = detect_picture(frame())
 
-                # Вход в уровень
-                if not level_entry(x, y, delay=0.3):
-                    continue
+            for square in picture['squares'][::-1]:
+                    x = square[0]
+                    y = square[1]
 
-                if puzzle is None:
-                    puzzle = detect_puzzle(frame(), solving_type)
+                    # Вход в уровень
+                    if not level_entry(x, y, delay=0.3):
+                        continue
 
-                if solve_puzzle(puzzle['coords'], puzzle['shape']):
-                    print('Переходим на NEXT LEVEL\n')
-                    tap_screen(538, 1758, delay=0.01)
+                    if puzzle is None:
+                        puzzle = detect_puzzle(frame(), solving_type)
 
-        time.sleep(7)
-        print('ща следующую картинку будем собирать...')
-        tap_screen(955, 1705, delay=0.1)
+                    if solve_puzzle(puzzle['coords'], puzzle['shape']):
+                        tap_screen(538, 1758, delay=0.01)
+                        print('Переходим на NEXT LEVEL\n')
+                    else:
+                        print()
+                        tap_screen(90, 130, delay=0)
+                        tap_screen(540, 1100, delay=1)
 
-# if __name__ == '__main__':
-#     solving_type = 'big'
 
+            print('ща следующую картинку будем собирать...')
+            time.sleep(7)
+            tap_screen(955, 1705, delay=0.1)
+            print()
+    except Exception as e:
+        print(f"Ошибка: {e}")
 
-#     main(solving_type)
+if __name__ == '__main__':
+    solving_type = 'big'
+    main(solving_type)
