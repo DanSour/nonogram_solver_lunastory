@@ -55,6 +55,10 @@
 
 [![](https://markdown-videos-api.jorgenkh.no/youtube/Ief3IwF7r5I)](https://youtu.be/Ief3IwF7r5I)
 
+
+|After (GIF)|[![](http://markdown-videos-api.jorgenkh.no/youtube/8lGpZkjnkt4.gif)](https://youtu.be/8lGpZkjnkt4.gif)|<ul><li>Clearly shows it's a youtube video</li><li>Play button and backdrop added</li><li>:sparkles: Animated GIF :sparkles: </li><li>Redirects to video</li></ul>|
+|--|--|--|
+
 ## Требования
 
 Необходимые пакеты Python можно установить с помощью следующей команды:
