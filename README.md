@@ -55,7 +55,7 @@
 
 https://github.com/DanSour/nonogram_solver_lunastory/raw/refs/heads/normal_levels/screenshots/video_for_proj.mp4
 
-https://youtu.be/0Y43dycmnFo
+![](https://youtu.be/0Y43dycmnFo)
 
 ## Требования
 
