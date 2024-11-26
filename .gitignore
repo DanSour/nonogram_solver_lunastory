@@ -1,0 +1,9 @@
+__pycache__
+.conda
+.vscode
+scrcpy-win64-v2.7
+solvers/__pycache__
+solvers/enumerative_backtracking_solver.py
+solvers/backtracking_naive.py
+delete.py
+_*

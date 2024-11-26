@@ -1,13 +1,10 @@
-import os, time
 from itertools import combinations
 import numpy as np 
-import matplotlib.pyplot as plt 
 from IPython.display import clear_output
 import sys
 
 class NonogramSolver:
-    # def __init__(self, ROWS_VALUES=[[2], [4], [6], [4, 3], [5, 4], [2, 3, 2], [3, 5], [5], [3], [2], [2], [6]], COLS_VALUES=[[3], [5], [3, 2, 1], [5, 1, 1], [12], [3, 7], [4, 1, 1, 1], [3, 1, 1], [4], [2]], savepath=''):
-    def __init__(self, ROWS_VALUES=[], COLS_VALUES=[]): #, savepath=''):
+    def __init__(self, ROWS_VALUES=[], COLS_VALUES=[]): 
         self.ROWS_VALUES = ROWS_VALUES
         self.no_of_rows = len(ROWS_VALUES)
         # self.rows_changed = [0] * self.no_of_rows
@@ -20,15 +17,22 @@ class NonogramSolver:
 
         self.solved = False 
         self.shape = (self.no_of_rows, self.no_of_cols)
-        self.board = [[0 for c in range(self.no_of_cols)] for r in range(self.no_of_rows)]
-        # self.savepath = savepath
-        # if self.savepath != '': self.n = 0
+        # self.board = [[0 for c in range(self.no_of_cols)] for r in range(self.no_of_rows)]
+        self.board = np.zeros((self.no_of_rows, self.no_of_cols), dtype=np.int8)
 
         # step 1: Defining all possible solutions for every row and col
         self.rows_possibilities = self.create_possibilities(ROWS_VALUES, self.no_of_cols)
         self.cols_possibilities = self.create_possibilities(COLS_VALUES, self.no_of_rows)
+
+        not_solved_max_times = 50
+        not_solved_times = 0
         
         while not self.solved:
+            if not_solved_times > not_solved_max_times:
+                print("I cant solve it     :(")
+                self.board = [ ]
+                break
+            # --------------------------------------------------------------------------
             # step 2: Order indici by lowest 
             self.lowest_rows = self.select_index_not_done(self.rows_possibilities, 1)
             self.lowest_cols = self.select_index_not_done(self.cols_possibilities, 0)
@@ -48,15 +52,10 @@ class NonogramSolver:
                             if row_ind: self.cols_possibilities[ci] = self.remove_possibilities(self.cols_possibilities[ci], ri, val)
                             else: self.rows_possibilities[ri] = self.remove_possibilities(self.rows_possibilities[ri], ci, val)
                             clear_output(wait=True)
-                            # self.display_board()
-                            # if self.savepath != '':
-                            #     self.save_board()
-                            #     self.n += 1
                     self.update_done(row_ind, ind1)
             self.check_solved()
-        # print(type(self.board))
-        # print(self.board)
-        # self.display_board()
+            # --------------------------------------------------------------------------
+            not_solved_times += 1
 
 
     def create_possibilities(self, values, no_of_other):
@@ -97,21 +96,6 @@ class NonogramSolver:
     def remove_possibilities(self, possibilities, i, val):
         return [p for p in possibilities if p[i] == val]
 
-    # def display_board(self):
-    #     plt.imshow(self.board, cmap='Greys')
-    #     plt.axis('off')
-    #     plt.show()
-
-    # def save_board(self, increase_size=20):
-    #     name = f'0000000{str(self.n)}'[-8:]
-    #     increased_board = np.zeros(np.array((self.no_of_rows, self.no_of_cols)) * increase_size, dtype=np.int8)
-    #     for j in range(self.no_of_rows):
-    #         for k in range(self.no_of_cols):
-    #             increased_board[j * increase_size : (j+1) * increase_size, k * increase_size : (k+1) * increase_size] = self.board[j][k]
-    #             print(type(increased_board))
-    #             sys.exit()
-    #     plt.imsave(os.path.join(self.savepath, f'{name}.jpeg'), increased_board, cmap='Greys', dpi=1000)
-
     def update_done(self, row_ind, idx):
         if row_ind: vals = self.board[idx]
         else: vals = [row[idx] for row in self.board]
@@ -126,23 +110,3 @@ class NonogramSolver:
     def check_solved(self):
         if 0 not in self.rows_done and 0 not in self.cols_done:
             self.solved = True
-            
-# #------------------------------------------------------------------------------------
-# start_time = time.time()  # Запоминаем время начала
-# #------------------------------------------------------------------------------------
-
-# ROWS_VALUES=[[2], [4], [6], [4, 3], [5, 4], [2, 3, 2], [3, 5], [5], [3], [2], [2], [6]]
-# COLS_VALUES=[[3], [5], [3, 2, 1], [5, 1, 1], [12], [3, 7], [4, 1, 1, 1], [3, 1, 1], [4], [2]]
-
-ROWS_VALUES = [[5],[1],[1],[1],[1]]
-COLS_VALUES = [[5],[1],[1],[1],[1]]
-
-# ROWS_VALUES =  [[2,3,1], [2,3], [3,2], [7], [7,1], [3,4], [1,3,4], [4,3], [4,1,3], [4,1,3]]
-# COLS_VALUES = [[4,4],[5,3],[8],[2,7],[7],[5,2],[4],[6],[5],[1,6]]
-
-
-NonogramSolver(ROWS_VALUES=ROWS_VALUES, COLS_VALUES=COLS_VALUES)
-
-# #------------------------------------------------------------------------------------
-# print(f"Время выполнения: {time.time() - start_time} секунд")
-# #------------------------------------------------------------------------------------
