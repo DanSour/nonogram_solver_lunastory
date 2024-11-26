@@ -53,20 +53,14 @@
 
 ## Пример использования
 
-![Альтернативный текст](screenshots/video_for_proj.mp4)
+В целях демонстрации работы проекта мы добавили видео, записанное во время использования скрипта `x_big_pictures_done.py`. Видео показывает автоматизированное решение нонограмм в режиме Big.
 
-screenshots/video_for_proj.mp4
+Однако, мы хотим отметить, что видео не будет воспроизводиться интерактивно непосредственно на GitHub из-за ограничений платформы по поддержке медиа-файлов. Для просмотра видео рекомендуется загрузить его на компьютер или воспроизвести через сторонний сервис.
 
-![](screenshots/video_for_proj.mp4)
+Видео можно найти здесь: [Video Example](../screenshots/video_for_proj.mp4)
 
-<video width="320" height="240" controls>
-  <source src="screenshots/video_for_proj.mp4" type="video/mp4">
-</video>
+Мы уверены, что это позволит вам лучше понять процесс работы нашего проекта на реальном устройстве.
 
-<video width="320" height="240" controls>
-  <source src="screenshots/video_for_proj.mp4" type="video/mp4">
-Ваш браузер не поддерживает элемент <code>video</code>.
-</video>
 
 ## Требования
 
