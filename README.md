@@ -56,7 +56,7 @@
 [![](https://markdown-videos-api.jorgenkh.no/youtube/Ief3IwF7r5I)](https://youtu.be/Ief3IwF7r5I)
 
 
-|[![](http://markdown-videos-api.jorgenkh.no/youtube/8lGpZkjnkt4.gif)](https://youtu.be/8lGpZkjnkt4.gif)| 
+|[![](http://markdown-videos-api.jorgenkh.no/youtube/Ief3IwF7r5I.gif)](https://youtu.be/Ief3IwF7r5I.gif)| 
 <ul>
 <li> Демонстрация прохождения уровней в режимах </li>
 <li> NORMAL (10*10, 15*15, 20*20) </li>
