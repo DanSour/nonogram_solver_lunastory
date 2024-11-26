@@ -53,9 +53,6 @@
 
 ## Пример использования
 
-[![](https://markdown-videos-api.jorgenkh.no/youtube/Ief3IwF7r5I)](https://youtu.be/Ief3IwF7r5I)
-
-
 | DEMO Video |[![](http://markdown-videos-api.jorgenkh.no/youtube/Ief3IwF7r5I.gif)](https://youtu.be/Ief3IwF7r5I.gif)| <ul><li> Демонстрация прохождения уровней в режимах </li><li> NORMAL (10*10, 15*15, 20*20) </li><li> В режиме BIG (10*10, 20*20)  </li><li> (Видео ускорено в 3 раза) </li></ul>
 |--|--|--|
 
