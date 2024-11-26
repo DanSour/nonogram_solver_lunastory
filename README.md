@@ -53,7 +53,7 @@
 
 ## Пример использования
 
-![](screenshots/video_for_proj.mp4)
+![video](screenshots/video_for_proj.mp4)
 
 ## Требования
 
