@@ -37,7 +37,7 @@
 
 Для корректной работы проекта потребуется:
 - Установка пакетов `opencv-python` и `pytesseract` для компьютерного зрения и распознавания текста.
-- Наличие телефона Android и установленной туда игры Luna Story I [Luna Story I](https://play.google.com/store/apps/details?id=com.healingjjam.lunastory1)
+- Наличие телефона Android и установленной туда игры [Luna Story I](https://play.google.com/store/apps/details?id=com.healingjjam.lunastory1)
 - Настройка ADB (Android Debug Bridge) для взаимодействия с устройством.
 - Наличие изображений и данных, используемых для распознавания нонограмм.
 
