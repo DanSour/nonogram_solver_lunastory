@@ -30,7 +30,7 @@ def level_entry(x: int, y: int, delay: float = 0.5):
             return False
     return True
 
-def solve_puzzle(puzzle_coords: PuzzleCoordinates, puzzle_shape: int): 
+def solve_puzzle(puzzle_coords: PuzzleCoordinates, puzzle_shape: int, height, width): 
     """Решает один пазл и возвращает True если решение успешно"""
     try:
         print('Ищем числа сверху...')
@@ -53,7 +53,7 @@ def solve_puzzle(puzzle_coords: PuzzleCoordinates, puzzle_shape: int):
         
         print('Проверка...')
         if not check_complete(frame()):
-            if not try_solve_with_hints():
+            if not try_solve_with_hints(height, width):
                 # try_solve_manually(board, puzzle_coords)
                 solving(board, puzzle_coords)
                 if not check_complete(frame()):

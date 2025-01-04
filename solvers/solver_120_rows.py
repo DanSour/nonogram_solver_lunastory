@@ -1,23 +1,19 @@
 from itertools import combinations
 import numpy as np 
-from IPython.display import clear_output
 import sys
 
 class NonogramSolver:
     def __init__(self, ROWS_VALUES=[], COLS_VALUES=[]): 
         self.ROWS_VALUES = ROWS_VALUES
         self.no_of_rows = len(ROWS_VALUES)
-        # self.rows_changed = [0] * self.no_of_rows
         self.rows_done = [0] * self.no_of_rows
 
         self.COLS_VALUES = COLS_VALUES
         self.no_of_cols = len(COLS_VALUES)
-        # self.cols_changed = [0] * self.no_of_cols
         self.cols_done = [0] * self.no_of_cols
 
         self.solved = False 
         self.shape = (self.no_of_rows, self.no_of_cols)
-        # self.board = [[0 for c in range(self.no_of_cols)] for r in range(self.no_of_rows)]
         self.board = np.zeros((self.no_of_rows, self.no_of_cols), dtype=np.int8)
 
         # step 1: Defining all possible solutions for every row and col
@@ -51,7 +47,6 @@ class NonogramSolver:
                             self.board[ri][ci] = val
                             if row_ind: self.cols_possibilities[ci] = self.remove_possibilities(self.cols_possibilities[ci], ri, val)
                             else: self.rows_possibilities[ri] = self.remove_possibilities(self.rows_possibilities[ri], ci, val)
-                            clear_output(wait=True)
                     self.update_done(row_ind, ind1)
             self.check_solved()
             # --------------------------------------------------------------------------

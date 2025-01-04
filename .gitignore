@@ -7,3 +7,4 @@ solvers/enumerative_backtracking_solver.py
 solvers/backtracking_naive.py
 delete.py
 _*
+nonogram_solver/

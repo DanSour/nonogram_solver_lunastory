@@ -14,16 +14,20 @@ def detect_circles(image) -> dict[str, list[list[int]]]:
     :return: Словарь с координатами центров кругов в формате {'circles': [[x1, y1], [x2, y2], ...]}.
     """
     try:
+        height, width = image.shape[:2]
+        
         # Обрезка изображения
-        cutted_img = image[750:1750, :].copy()
+        top = int(height * 0.31)
+        bottom = int(height * 0.74)
+        cutted_img = image[top:bottom, :].copy()
 
-    # Преобразование в оттенки серого
+        # Преобразование в оттенки серого
         gray_img = cv2.cvtColor(cutted_img, cv2.COLOR_BGR2GRAY)
 
     # Применение алгоритма Хафа для обнаружения окружностей
         circles = cv2.HoughCircles(gray_img, cv2.HOUGH_GRADIENT, 1, 20,
-                            param1=50, param2=30, minRadius=60, maxRadius=64)
-    
+                                   param1=50, param2=30, minRadius=int(0.0532786885 * width), maxRadius=int(0.0614754 * width))
+                                    # param1=50, param2=30, minRadius=65, maxRadius=75)
         circles_centers_coords = []  # Список для хранения координат центров кругов
 
     # Проверка обнаружения кругов
@@ -37,8 +41,15 @@ def detect_circles(image) -> dict[str, list[list[int]]]:
         # Перебор всех найденных окружностей
         for circle in circles[0, :]:
             x, y = circle[:2]
+
             # Обрезка региона с числом уровней внутри окружности
-            cutted_region = image[y+750 + 75: y+750 + 120, x - 70: x + 70]
+            region_mid = y + int(height * 0.04)
+
+            y_offset = int(0.011 * height)  # Отступ от центра зоны вверх-вниз
+            x_offset = int(0.06481 * width)    # Отступ от центра зоны влево-вправо
+
+            cutted_region = cutted_img[region_mid - y_offset: region_mid + y_offset, x - x_offset: x + x_offset]
+            
             # Распознавание текста в обрезанной области
             text = pytesseract.image_to_string(cutted_region, config='--psm 7 -c tessedit_char_whitelist=0123456789/')
             # Удаление пробелов и разделение по '/'
@@ -46,7 +57,7 @@ def detect_circles(image) -> dict[str, list[list[int]]]:
             # Проверка, является ли распознанный текст числом и входит ли он в диапазон от 0 до 25
             if levels_text.isdigit() and 0 <= int(levels_text) < 26:
                 # Добавление координат центра окружности в список
-                circles_centers_coords.append([x, y+750])
+                circles_centers_coords.append([x, y + top])
 
         circles_centers_coords.sort(key=lambda coord: (coord[1], coord[0]))  # Сортировка по x, затем по y
 

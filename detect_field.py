@@ -44,7 +44,6 @@ def detect_puzzle(img, mask_type='big'):
             'big': cv2.inRange(img, (108, 93, 17), (255, 255, 255)),
         }
 
-
         contours, _ = cv2.findContours(masks[mask_type], cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         field_contour = max(contours, key=cv2.contourArea)
         x, y, w, h = cv2.boundingRect(field_contour)
@@ -62,7 +61,7 @@ def detect_puzzle(img, mask_type='big'):
         contours, _ = cv2.findContours(mask, cv2.RETR_LIST , cv2.CHAIN_APPROX_SIMPLE)
 
     except Exception as e:
-        print(f"Error in detect_puzzle: {e}")
+        print(f"Ошибка в файле detect_puzzle: {e}")
         return {'coords':[[x, x+w], [y, y+h]], 'shape':int(len(contours)**0.5)}
     
     return {'coords':[[x, x+w], [y, y+h]], 'shape':int(len(contours)**0.5)}
